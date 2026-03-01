@@ -1618,10 +1618,9 @@
       "Phoenicia",
       "Modern Lebanon"
     ],
-    "geocoded_location":"Phoenicia, Town of Shandaken, Ulster County, New York, United States",
+    "geocoded_location":"Lebanon",
     "coordinates":[
-      42.0774565,
-      -74.3052306
+      33.8687009,35.939988
     ]
   },
   {
@@ -1632,10 +1631,9 @@
       "Corinth",
       "Ancient Greece"
     ],
-    "geocoded_location":"Corinth, Alcorn County, Mississippi, 38834, United States",
+    "geocoded_location":"Greece",
     "coordinates":[
-      34.9343599,
-      -88.5223353
+      37.9256809,22.9974131
     ]
   },
   {
@@ -1715,10 +1713,9 @@
       "Carthage",
       "BC Celtiberian Spain"
     ],
-    "geocoded_location":"Carthage, Panola County, Texas, 75633, United States",
+    "geocoded_location":"Tunisia",
     "coordinates":[
-      32.1570412,
-      -94.338114
+      36.8702619,10.3129616
     ]
   },
   {
