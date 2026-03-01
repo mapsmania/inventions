@@ -1834,10 +1834,9 @@
       "Mo",
       "China"
     ],
-    "geocoded_location":"Missouri, United States",
+    "geocoded_location":"China",
     "coordinates":[
-      38.7604815,
-      -92.5617875
+      33.1739816,103.5088646
     ]
   },
   {
@@ -1899,10 +1898,9 @@
     "extracted_locations":[
       "Nailed Horseshoe"
     ],
-    "geocoded_location":"Nailed It Beauty Bar, 276, Lakeshore Road East, Port Credit, Mississauga, Peel Region, Golden Horseshoe, Ontario, L5G 1H2, Canada",
+    "geocoded_location":"Italy",
     "coordinates":[
-      43.5605302,
-      -79.5763857
+      43.1479535,11.4538256
     ]
   },
   {
@@ -1912,10 +1910,9 @@
     "extracted_locations":[
       "Carthage"
     ],
-    "geocoded_location":"Carthage, Panola County, Texas, 75633, United States",
+    "geocoded_location":"Tunisia",
     "coordinates":[
-      32.1570412,
-      -94.338114
+      35.050855,9.6443199
     ]
   },
   {
@@ -1985,10 +1982,9 @@
     "extracted_locations":[
       "Rhodes"
     ],
-    "geocoded_location":"Rhodes, Sarrebourg-Château-Salins, Moselle, Grand Est, France métropolitaine, 57810, France",
+    "geocoded_location":"Egypt",
     "coordinates":[
-      48.7584377,
-      6.8985177
+      29.2856519,29.4568859
     ]
   },
   {
@@ -2013,10 +2009,9 @@
       "Ptolemy II",
       "Hellenistic Egypt"
     ],
-    "geocoded_location":"Canale d'Agordo, Belluno, Veneto, 32020, Italia",
+    "geocoded_location":"Egypt",
     "coordinates":[
-      46.3600576,
-      11.9150952
+      29.2856519,29.4568859
     ]
   },
   {
@@ -2027,7 +2022,7 @@
 
     ],
     "geocoded_location":null,
-    "coordinates":null
+    "coordinates":[29.2856519,29.4568859]
   },
   {
     "section":"Classical antiquity and medieval era",
@@ -2054,10 +2049,9 @@
       "Philo",
       "Byzantium"
     ],
-    "geocoded_location":"Philo, Mendocino County, California, United States",
+    "geocoded_location":"Istanbul",
     "coordinates":[
-      39.067607,
-      -123.4445624
+      41.0318514,28.9268116
     ]
   },
   {
@@ -2068,10 +2062,9 @@
       "Ptolemy IV",
       "Hellenistic Egypt"
     ],
-    "geocoded_location":"Ptolemy Street, Algiers, New Orleans, Orleans Parish, Louisiana, 70114, United States",
+    "geocoded_location":"Egypt",
     "coordinates":[
-      29.9402569,
-      -90.0503413
+      29.2856519,29.4568859
     ]
   },
   {
@@ -2247,10 +2240,9 @@
       "Pliny",
       "Roman"
     ],
-    "geocoded_location":"Pliny, Putnam County, West Virginia, 25033, United States",
+    "geocoded_location":"Italy",
     "coordinates":[
-      38.620364,
-      -81.9873601
+      42.6953805,12.5715025
     ]
   },
   {
@@ -2324,10 +2316,9 @@
     "extracted_locations":[
       "Han"
     ],
-    "geocoded_location":"Hancock County, Ohio, United States",
+    "geocoded_location":"China",
     "coordinates":[
-      40.9939911,
-      -83.6587588
+      31.6696928,109.3035998
     ]
   },
   {
