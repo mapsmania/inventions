@@ -79,7 +79,8 @@ function askQuestion(){
   const person = gamePeople[currentIndex]
 
   questionDiv.innerHTML =
-  `<b>${person.properties.Name}</b><br>
+  `<b>Question ${currentIndex + 1} / 10</b><br>
+  <b>${person.properties.Name}</b><br>
   ${person.properties.Occupation}<br>
   Born ${person.properties["Birth Year"]}<br><br>
   Click the map where you think they were born.`
@@ -95,14 +96,14 @@ function askQuestion(){
   if(answerMarker) answerMarker.remove()
 
   if(map.getLayer("resultLine")){
-  map.removeLayer("resultLine")
-}
+    map.removeLayer("resultLine")
+  }
 
-if(map.getSource("resultLine")){
-  map.removeSource("resultLine")
-}
+  if(map.getSource("resultLine")){
+    map.removeSource("resultLine")
+  }
 
-resultLine = null
+  resultLine = null
 
   loadWikipedia(person.properties.Name)
 
@@ -247,25 +248,26 @@ function showSummary(){
   let html = "<h3>Game Summary</h3>"
 
   let totalScore = 0
-let totalDistance = 0
+  let totalDistance = 0
 
-guesses.forEach(g=>{
+  guesses.forEach((g, i)=>{
 
-  totalScore += g.score
-  totalDistance += g.distance
+    totalScore += g.score
+    totalDistance += g.distance
 
-  html += `${g.name}: ${g.score} points (${Math.round(g.distance)} km)<br>`
+    html += `<b>${i + 1}.</b> ${g.name}: ${g.score} points (${Math.round(g.distance)} km)<br>`
 
-})
+  })
 
-html += `<br><b>Total score:</b> ${totalScore} / 50000<br>`
-html += `<b>Total distance:</b> ${Math.round(totalDistance)} km`
+  html += `<br><b>Total score:</b> ${totalScore} / 50000<br>`
+  html += `<b>Total distance:</b> ${Math.round(totalDistance)} km`
 
   questionDiv.innerHTML = html
   resultDiv.innerHTML = ""
   nextBtn.style.display = "none"
 
 }
+
 
 function shuffle(array){
 
