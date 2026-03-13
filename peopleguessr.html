@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Birthplace Guess Game</title>
+
+<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+}
+
+#layout{
+  display:flex;
+  height:100vh;
+}
+
+/* Map takes most of the space */
+#map{
+  flex:3;
+}
+
+/* Side panel */
+#panel{
+  flex:1;
+  padding:16px;
+  overflow-y:auto;
+  background:#ffffff;
+  border-left:1px solid #ddd;
+}
+
+#question{
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+#result{
+  margin-top:10px;
+}
+
+button{
+  margin-top:12px;
+  padding:8px 14px;
+  font-size:16px;
+}
+
+/* Mobile layout */
+@media (max-width: 768px){
+
+  #layout{
+    flex-direction:column;
+  }
+
+  #map{
+    height:55vh;
+  }
+
+  #panel{
+    height:45vh;
+    border-left:none;
+    border-top:1px solid #ddd;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="layout">
+
+  <div id="map"></div>
+
+  <div id="panel">
+
+    <div id="question"></div>
+
+    <img id="photo" style="width:100%;max-width:200px;display:none;margin-top:8px">
+
+    <div id="result"></div>
+
+    <button id="nextBtn" style="display:none">Next</button>
+
+  </div>
+
+</div>
+
+
+    
+<script src="guess.js"></script>
+
+</body>
+</html>
