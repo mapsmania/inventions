@@ -41,12 +41,30 @@ body {
   margin-top:10px;
 }
 
-button{
-  margin-top:12px;
-  padding:8px 14px;
-  font-size:16px;
+button {
+  margin-top: 12px;
+  padding: 10px 18px;        /* slightly bigger for comfort */
+  font-size: 16px;
+  font-weight: 500;           /* makes text a bit bolder */
+  color: #fff;                /* white text */
+  background-color: #007bff;  /* nice blue */
+  border: none;
+  border-radius: 8px;         /* rounded corners */
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1); /* subtle shadow */
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* smooth effects */
 }
 
+button:hover {
+  background-color: #0056b3;  /* darker blue on hover */
+  transform: translateY(-2px); /* slight lift */
+  box-shadow: 0 5px 10px rgba(0,0,0,0.15); /* deeper shadow */
+}
+
+button:active {
+  transform: translateY(0);  /* press effect */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 /* Mobile layout */
 @media (max-width: 768px){
 
