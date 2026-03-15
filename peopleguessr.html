@@ -21,6 +21,8 @@ body {
 /* Map takes most of the space */
 #map{
   flex:3;
+  position:relative;
+  z-index:1;  
 }
 
 /* Side panel */
@@ -30,6 +32,8 @@ body {
   overflow-y:auto;
   background:#ffffff;
   border-left:1px solid #ddd;
+  position:relative;
+  z-index:1;
 }
 
 #question{
@@ -43,29 +47,102 @@ body {
 
 button {
   margin-top: 12px;
-  padding: 10px 18px;        /* slightly bigger for comfort */
+  padding: 10px 18px;
   font-size: 16px;
-  font-weight: 500;           /* makes text a bit bolder */
-  color: #fff;                /* white text */
-  background-color: #007bff;  /* nice blue */
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(0,123,255,0.85), rgba(0,180,255,0.85));
   border: none;
-  border-radius: 8px;         /* rounded corners */
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1); /* subtle shadow */
-  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* smooth effects */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  backdrop-filter: blur(5px); /* subtle glass effect */
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-  background-color: #0056b3;  /* darker blue on hover */
-  transform: translateY(-2px); /* slight lift */
-  box-shadow: 0 5px 10px rgba(0,0,0,0.15); /* deeper shadow */
+  background: linear-gradient(135deg, rgba(0,100,220,0.95), rgba(0,160,220,0.95));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
 button:active {
-  transform: translateY(0);  /* press effect */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
-/* Mobile layout */
+    
+#summaryOverlay{
+  position:fixed;
+  inset:0;
+
+  background:white;
+
+  z-index:999999;
+
+  display:none;
+
+  overflow-y:auto;      /* full scroll container */
+}
+
+#summaryContent{
+  width:95%;
+  max-width:1400px;
+
+  margin:15px auto 60px auto;   /* smaller top, larger bottom */
+
+  text-align:center;
+}
+    
+    #summaryGrid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:25px;
+
+  margin-top:30px;
+  margin-bottom:30px;   /* ensures button is visible */
+}
+
+ #summaryTitle{
+  margin-top:5px;
+  margin-bottom:10px;
+}   
+
+.personCard{
+  text-align:center;
+}
+
+.personCard img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.personName{
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.personScore{
+  font-size:14px;
+}
+
+#playAgainBtn{
+  margin-top:20px;
+  margin-bottom:40px;   /* space below button */
+
+  padding:12px 26px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.scoreGreat { color:#2ecc71; }
+.scoreGood { color:#f1c40f; }
+.scoreBad { color:#e67e22; }
+.scoreTerrible { color:#e74c3c; }
+
+.personScore { font-weight:bold; }    
+    
 @media (max-width: 768px){
 
   #layout{
@@ -82,7 +159,7 @@ button:active {
     border-top:1px solid #ddd;
   }
 
-}
+}    
 </style>
 </head>
 
@@ -92,7 +169,8 @@ button:active {
 
   <div id="map"></div>
 
-  <div id="panel">
+
+    <div id="panel">
 
     <div id="question"></div>
 
@@ -103,6 +181,20 @@ button:active {
     <button id="nextBtn" style="display:none">Next</button>
 
   </div>
+
+<div id="summaryOverlay">
+  <div id="summaryContent">
+
+    <h2 id="summaryTitle">Game Results</h2>
+
+    <div id="summaryGrid"></div>
+
+    <button id="playAgainBtn">Play Again</button>
+
+  </div>
+</div>
+
+  
 
 </div>
 
