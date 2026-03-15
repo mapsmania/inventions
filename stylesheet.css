@@ -1,3 +1,4 @@
+
 body {
   margin:0;
   font-family:Arial, sans-serif;
@@ -163,11 +164,14 @@ button:active {
   text-align:center;
 }
 
-.personCard img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border-radius:8px;
+.personCard img {
+  width: 140px;         /* Fixed width for a consistent circle size */
+  height: 140px;        /* Matches width to maintain 1:1 ratio */
+  object-fit: cover;    /* Ensures face isn't stretched */
+  border-radius: 50%;   /* This creates the circle */
+  border: 4px solid #f0f0f0; /* Optional: adds a nice "frame" look */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
 }
 
 .personName{
@@ -210,5 +214,10 @@ button:active {
     border-left:none;
     border-top:1px solid #ddd;
   }
+
+  #summaryGrid {
+  grid-template-columns: repeat(2, 1fr); /* Shows 2 circles side-by-side on mobile */
+  gap: 15px;
+}
 
 }    
