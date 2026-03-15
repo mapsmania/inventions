@@ -308,14 +308,35 @@ function showResult(distance, actual){
 
 
 
-  answerMarker = new maplibregl.Marker({color:"green"})
+// Create marker container
+const el = document.createElement("div");
+el.className = "answer-marker";
 
-  .setLngLat(actual)
+el.style.width = "50px";
+el.style.height = "50px";
+el.style.display = "block";
+el.style.background = "red"; // temporary debug
+    
 
-  .addTo(map)
+const photoUrl = wikiPhotos[currentIndex];
 
+const img = document.createElement("img");
+img.src = photoUrl;
 
+img.style.width = "50px";
+img.style.height = "50px";
+img.style.borderRadius = "50%";
+img.style.objectFit = "cover";
+img.style.border = "3px solid white";
+img.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
 
+answerMarker = new maplibregl.Marker({
+  element: img,
+  anchor: "center"
+})
+.setLngLat(actual)
+.addTo(map);
+    
     map.addSource("resultLine", {
 
   type: "geojson",
