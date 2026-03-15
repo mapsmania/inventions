@@ -396,12 +396,14 @@ bounds.extend(actual)
 
 
 map.fitBounds(bounds, {
-
-  padding: 80,
-
+  padding: {
+    top: 80,
+    bottom: 80,
+    left: 80,
+    right: 420
+  },
   duration: 1500
-
-})
+});
 
 
 
