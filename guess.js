@@ -30,6 +30,7 @@ let resultLine = null
 
 let wikiPhotos = []
 
+let currentCountryCenter = null;
 
 
 let guessMarker = null
@@ -53,52 +54,96 @@ const photo = document.getElementById("photo")
 
 // Load GeoJSON
 
+
+
 fetch("https://mapsmania.github.io/inventions/notable_people.geojson")
+  .then(res => res.json())
+  .then(data => {
 
-.then(res => res.json())
+    allPeople = data.features;
 
-.then(data => {
+    // Build country counts
+    const countryCount = {};
 
+    allPeople.forEach(p => {
+      const country = p.properties["Birth Country"];
+      if(country){
+        countryCount[country] = (countryCount[country] || 0) + 1;
+      }
+    });
 
+    // Filter countries with at least 10 people
+    const playableCountries = Object.keys(countryCount).filter(c => countryCount[c] >= 10);
 
-  allPeople = data.features
+    const countryButtonsDiv = document.getElementById("countryButtons");
 
+    playableCountries.forEach(country => {
+      const btn = document.createElement("button");
+      btn.textContent = country;
+      btn.onclick = () => {
+        startCountryGame(country);
+      };
+      countryButtonsDiv.appendChild(btn);
+    });
 
+    // Optional: sort alphabetically
+    countryButtonsDiv.querySelectorAll("button")
+      && Array.from(countryButtonsDiv.querySelectorAll("button"))
+        .sort((a,b) => a.textContent.localeCompare(b.textContent))
+        .forEach(b => countryButtonsDiv.appendChild(b));
 
-  startGame()
+    // Show welcome screen now that buttons exist
+    document.getElementById("welcomeOverlay").style.display = "flex";
+  });
 
+function startCountryGame(countryName){
+  document.getElementById("welcomeOverlay").style.display = "none";
 
+  // Filter people for this country
+  const countryPeople = allPeople.filter(p => p.properties["Birth Country"] === countryName);
 
-})
+  // Compute approximate center of the country
+  if(countryPeople.length > 0){
+    let sumLng = 0;
+    let sumLat = 0;
+    countryPeople.forEach(p => {
+      sumLng += p.geometry.coordinates[0];
+      sumLat += p.geometry.coordinates[1];
+    });
+    currentCountryCenter = [sumLng / countryPeople.length, sumLat / countryPeople.length];
+  } else {
+    currentCountryCenter = INITIAL_CENTER;
+  }
 
+  // Fly map to the country center
+  map.flyTo({
+    center: currentCountryCenter,
+    zoom: 4,   // zoom in more than world view
+    speed: 0.8,
+    curve: 1
+  });
 
+  // Shuffle and pick 10
+  gamePeople = shuffle(countryPeople).slice(0,10);
 
-function startGame(){
+  currentIndex = 0;
+  guesses = [];
+  wikiPhotos = [];
 
-
-
-  document.getElementById("summaryOverlay").style.display = "none"
-
-
-
-  gamePeople = shuffle(allPeople).slice(0,10)
-
-
-
-  currentIndex = 0
-
-  guesses = []
-
-
-
-  askQuestion()
-
-
-
+  askQuestion();
 }
 
+function startGame(){
+  document.getElementById("summaryOverlay").style.display = "none";
 
+  currentCountryCenter = null; // reset to world view
 
+  gamePeople = shuffle(allPeople).slice(0,10);
+  currentIndex = 0;
+  guesses = [];
+
+  askQuestion();
+}
 
 
 async function loadWikipedia(personName){
@@ -148,6 +193,17 @@ async function loadWikipedia(personName){
   }
 }
 
+// World Game: hide overlay and start regular game
+document.getElementById("worldGameBtn").onclick = () => {
+  document.getElementById("welcomeOverlay").style.display = "none";
+  startGame();
+};
+
+// Country Game: hide first choice, show country list panel
+document.getElementById("countryGameBtn").onclick = () => {
+  document.getElementById("welcomeChoice").style.display = "none";
+  document.getElementById("countryListPanel").style.display = "flex";
+};
 
 function askQuestion(){
 
@@ -473,40 +529,22 @@ ${person.properties["Birth Country"]}<br><br>`
 
 
 
-nextBtn.onclick = ()=>{
-
-
-
-  currentIndex++
-
-
+nextBtn.onclick = () => {
+  currentIndex++;
 
   if(currentIndex >= gamePeople.length){
-
-    showSummary()
-
-    return
-
+    showSummary();
+    return;
   }
 
-
-
+  // Fly to country center if set, otherwise world view
   map.flyTo({
+    center: currentCountryCenter || INITIAL_CENTER,
+    zoom: currentCountryCenter ? 4 : INITIAL_ZOOM
+  });
 
-    center: INITIAL_CENTER,
-
-    zoom: INITIAL_ZOOM
-
-  })
-
-
-
-  askQuestion()
-
-
-
-}
-
+  askQuestion();
+};
 
 
 function showSummary(){
@@ -627,34 +665,23 @@ function shuffle(array){
 
 
 
-document.getElementById("playAgainBtn").onclick = ()=>{
+document.getElementById("playAgainBtn").onclick = () => {
 
+  // Hide the summary overlay
+  document.getElementById("summaryOverlay").style.display = "none";
 
+  // Reset wiki photos
+  wikiPhotos = [];
 
-  document.getElementById("summaryOverlay").style.display = "none"
-
-  
-
-  wikiPhotos = []
-
-
-
+  // Reset map view
   map.flyTo({
-
     center: INITIAL_CENTER,
-
     zoom: INITIAL_ZOOM
+  });
 
-  })
-
-
-
-  startGame()
-
-}
-
-
-
+  // Show the welcome screen instead of starting the game
+  document.getElementById("welcomeOverlay").style.display = "flex";
+};
 
 
 // Haversine formula
@@ -714,3 +741,20 @@ function calculateScore(distance){
 
 
 }
+
+// World Game button
+document.getElementById("worldGameBtn").onclick = () => {
+  // Hide the welcome overlay
+  document.getElementById("welcomeOverlay").style.display = "none";
+
+  // Start the existing game logic (all people, random 10)
+  startGame();
+};
+
+document.getElementById("backToChoice").onclick = () => {
+  // Hide the country list panel
+  document.getElementById("countryListPanel").style.display = "none";
+  
+  // Show the initial welcome choice panel
+  document.getElementById("welcomeChoice").style.display = "flex";
+};
