@@ -14,7 +14,22 @@
 <body>
 
 <div id="layout">
+<div id="welcomeOverlay">
+  <!-- First choice panel -->
+  <div id="welcomeChoice" class="welcomePanel">
+    <h1>Famous Birthplace Game</h1>
+    <p>Test your geography skills!</p>
+    <button id="worldGameBtn">🌍 World Game</button>
+    <button id="countryGameBtn">🇺🇸 Country Game</button>
+  </div>
 
+  <!-- Second panel: country list, hidden initially -->
+  <div id="countryListPanel" class="welcomePanel" style="display:none;">
+    <h1>Choose a Country</h1>
+    <div id="countryButtons" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    <button id="backToChoice">⬅ Back</button>
+  </div>
+</div>
   <div id="map"></div>
 
 
