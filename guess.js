@@ -37,6 +37,7 @@ let guessMarker = null
 let answerMarker = null
 
 
+const wikiCache = {}
 
 const questionDiv = document.getElementById("question")
 
@@ -102,63 +103,56 @@ function startGame(){
 
 async function loadWikipedia(personName){
 
+  // check cache first
+  if(wikiCache[personName]){
+    const data = wikiCache[personName]
+    wikiData = data
+
+    if(data.thumbnail){
+      photo.src = data.thumbnail.source
+      photo.style.display = "block"
+      wikiPhotos[currentIndex] = data.thumbnail.source
+    }else{
+      photo.style.display = "none"
+      wikiPhotos[currentIndex] = null
+    }
+
+    return
+  }
 
 
   const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(personName)}`
 
-
-
   try{
 
-
-
     const res = await fetch(url)
-
     const data = await res.json()
 
-
+    // store in cache
+    wikiCache[personName] = data
 
     wikiData = data
 
-
-
     if(data.thumbnail){
-
       photo.src = data.thumbnail.source
-
       photo.style.display = "block"
-
-
-
       wikiPhotos[currentIndex] = data.thumbnail.source
-
-
-
     }else{
-
       photo.style.display = "none"
-
       wikiPhotos[currentIndex] = null
-
     }
 
-
-
   }catch(e){
-
     console.log("Wiki error", e)
-
     wikiData = null
-
   }
-
 }
-
 
 
 function askQuestion(){
 
-
+ 
+document.getElementById("scoreFill").style.width = "0%"
 
   const person = gamePeople[currentIndex]
 
@@ -407,10 +401,12 @@ map.fitBounds(bounds, {
 
 
 
-  const score = guesses[currentIndex].score
+const score = guesses[currentIndex].score
 
-
-
+// progress bar update
+const percent = score / 5000 * 100
+document.getElementById("scoreFill").style.width = percent + "%"
+    
 let html =
 
 `You were <b>${Math.round(distance)} km</b> away.<br>
