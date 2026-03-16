@@ -214,6 +214,127 @@ width:0%;
 background:#2ecc71;
 transition:width 1s ease;
 }
+
+/* Full-screen overlay */
+
+/* Full-screen overlay */
+#welcomeOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75); /* semi-transparent dark */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+/* Card-style container for panels */
+.welcomePanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+
+  background: #fff;          /* white card */
+  padding: 40px 30px;       /* space inside card */
+  border-radius: 20px;       /* rounded corners */
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);  /* subtle shadow */
+}
+
+/* Inner container */
+#welcomeContent {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+/* Heading */
+#welcomeContent h1 {
+  margin-bottom: 15px;
+  font-size: 28px;
+}
+
+/* Description */
+#welcomeContent p {
+  margin-bottom: 25px;
+  font-size: 16px;
+  color: #555;
+}
+
+/* Buttons */
+#welcomeContent button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#worldGameBtn {
+  background: linear-gradient(135deg, #0d8ddb, #32c1ff);
+}
+
+#countryGameBtn {
+  background: linear-gradient(135deg, #ff5f6d, #ffc371);
+}
+
+#welcomeContent button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+#welcomeContent button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+#welcomeOverlay {
+  backdrop-filter: blur(4px);
+}
+
+#countryListContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#countryButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#countryButtons button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#countryButtons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
     
 @media (max-width: 768px){
 
