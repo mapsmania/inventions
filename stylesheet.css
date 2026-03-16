@@ -198,6 +198,22 @@ button:active {
 .scoreTerrible { color:#e74c3c; }
 
 .personScore { font-weight:bold; }    
+
+
+#scoreBar{
+height:10px;
+background:#eee;
+border-radius:6px;
+margin-top:10px;
+overflow:hidden;
+}
+
+#scoreFill{
+height:100%;
+width:0%;
+background:#2ecc71;
+transition:width 1s ease;
+}
     
 @media (max-width: 768px){
 
