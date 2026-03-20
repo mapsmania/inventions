@@ -31,6 +31,7 @@ let resultLine = null
 let wikiPhotos = []
 
 let currentCountryCenter = null;
+let currentCountryBounds = null;
 
 
 let guessMarker = null
@@ -96,36 +97,28 @@ fetch("https://mapsmania.github.io/inventions/notable_people.geojson")
     document.getElementById("welcomeOverlay").style.display = "flex";
   });
 
-function startCountryGame(countryName){
+function startCountryGame(countryName) {
   document.getElementById("welcomeOverlay").style.display = "none";
 
-  // Filter people for this country
+  // 1. Filter people for this country
   const countryPeople = allPeople.filter(p => p.properties["Birth Country"] === countryName);
 
-  // Compute approximate center of the country
-  if(countryPeople.length > 0){
-    let sumLng = 0;
-    let sumLat = 0;
-    countryPeople.forEach(p => {
-      sumLng += p.geometry.coordinates[0];
-      sumLat += p.geometry.coordinates[1];
+  if (countryPeople.length > 0) {
+    const bounds = new maplibregl.LngLatBounds();
+    countryPeople.forEach(p => bounds.extend(p.geometry.coordinates));
+
+    // Store the bounds globally so the Next button can find them
+    currentCountryBounds = bounds;
+    currentCountryCenter = bounds.getCenter();
+
+    map.fitBounds(bounds, {
+      padding: 100,
+      duration: 2000
     });
-    currentCountryCenter = [sumLng / countryPeople.length, sumLat / countryPeople.length];
-  } else {
-    currentCountryCenter = INITIAL_CENTER;
   }
 
-  // Fly map to the country center
-  map.flyTo({
-    center: currentCountryCenter,
-    zoom: 4,   // zoom in more than world view
-    speed: 0.8,
-    curve: 1
-  });
-
   // Shuffle and pick 10
-  gamePeople = shuffle(countryPeople).slice(0,10);
-
+  gamePeople = shuffle(countryPeople).slice(0, 10);
   currentIndex = 0;
   guesses = [];
   wikiPhotos = [];
@@ -537,16 +530,25 @@ nextBtn.onclick = () => {
     return;
   }
 
-  // Fly to country center if set, otherwise world view
-  map.flyTo({
-    center: currentCountryCenter || INITIAL_CENTER,
-    zoom: currentCountryCenter ? 4 : INITIAL_ZOOM
-  });
+  // If we have country bounds, fit the map to them. 
+  // Otherwise, go back to the world view.
+  if (currentCountryBounds) {
+    map.fitBounds(currentCountryBounds, {
+      padding: 100,
+      duration: 1500,
+      essential: true
+    });
+  } else {
+    map.flyTo({
+      center: INITIAL_CENTER,
+      zoom: INITIAL_ZOOM,
+      duration: 1500
+    });
+  }
 
   askQuestion();
 };
-
-
+    
 function showSummary(){
 
 
