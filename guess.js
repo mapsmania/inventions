@@ -10,7 +10,7 @@ const map = new maplibregl.Map({
   zoom: INITIAL_ZOOM,
   container: 'map',
   // Add your custom attribution here
-  customAttribution: 'Notable People Data <a href="https://www.kaggle.com/datasets/beridzeg45/famous-people-through-the-ages" target="_blank">beridzeg45 on Kaggle</a>'
+  customAttribution: 'Notable People Data <a href="https://www.kaggle.com/datasets/beridzeg45/notable-people-in-history" target="_blank">beridzeg45 on Kaggle</a>'
 })
 
 
