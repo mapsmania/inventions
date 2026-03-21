@@ -13,6 +13,33 @@ const map = new maplibregl.Map({
   customAttribution: 'Notable People Data <a href="https://www.kaggle.com/datasets/beridzeg45/notable-people-in-history" target="_blank">beridzeg45 on Kaggle</a>'
 })
 
+const STORAGE_KEY = "guessedPeople";
+
+function getGuessedPeople(){
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+function saveGuessedPeople(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function addGuessedPerson(name){
+  let guessed = getGuessedPeople();
+
+  // remove if already exists (so it becomes most recent)
+  guessed = guessed.filter(n => n !== name);
+
+  guessed.push(name);
+
+  // keep only last 100
+  if(guessed.length > 100){
+    guessed = guessed.slice(-100);
+  }
+
+  saveGuessedPeople(guessed);
+}
+
 
 let allPeople = []
 
@@ -131,7 +158,15 @@ function startGame(){
 
   currentCountryCenter = null; // reset to world view
 
-  gamePeople = shuffle(allPeople).slice(0,10);
+const guessed = getGuessedPeople();
+
+const availablePeople = allPeople.filter(p => 
+  !guessed.includes(p.properties.Name)
+);
+
+const pool = availablePeople.length >= 10 ? availablePeople : allPeople;
+
+gamePeople = shuffle(pool).slice(0, 10);
   currentIndex = 0;
   guesses = [];
 
@@ -271,77 +306,39 @@ document.getElementById("scoreFill").style.width = "0%"
 
 map.on("click", (e)=>{
 
-
-
   if(!roundActive) return
-
   if(currentIndex >= gamePeople.length) return
-
-
 
   roundActive = false
 
-
-
   const guess = [e.lngLat.lng, e.lngLat.lat]
-
-
-
   const person = gamePeople[currentIndex]
-
-
-
   const actual = person.geometry.coordinates
 
-
-
   const distance = getDistanceKm(
-
     guess[1], guess[0],
-
     actual[1], actual[0]
-
   )
-
-
 
   const score = calculateScore(distance)
 
+  guesses.push({
+    name: person.properties.Name,
+    guess,
+    actual,
+    distance,
+    score
+  });
 
+  // Only store for world mode
+  if(!currentCountryBounds){
+    addGuessedPerson(person.properties.Name);
+  }
 
-guesses.push({
+  
+  showResult(distance, actual);
 
-  name: person.properties.Name,
-
-  guess,
-
-  actual,
-
-  distance,
-
-  score
-
-})
-
-
-
-  guessMarker = new maplibregl.Marker({color:"blue"})
-
-    .setLngLat(guess)
-
-    .addTo(map)
-
-
-
-  showResult(distance, actual)
-
-
-
-})
-
-
-
-
+}); 
 
 function showResult(distance, actual){
 
