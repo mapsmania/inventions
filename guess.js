@@ -13,33 +13,32 @@ const map = new maplibregl.Map({
   customAttribution: 'Notable People Data <a href="https://www.kaggle.com/datasets/beridzeg45/notable-people-in-history" target="_blank">beridzeg45 on Kaggle</a>'
 })
 
-const STORAGE_KEY = "guessedPeople";
+const STORAGE_KEY = "masteredPeople";
 
-function getGuessedPeople(){
+function getMasteredPeople(){
   const data = localStorage.getItem(STORAGE_KEY);
   return data ? JSON.parse(data) : [];
 }
 
-function saveGuessedPeople(list){
+function saveMasteredPeople(list){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
-function addGuessedPerson(name){
-  let guessed = getGuessedPeople();
+function addMasteredPerson(name){
+  let mastered = getMasteredPeople();
 
-  // remove if already exists (so it becomes most recent)
-  guessed = guessed.filter(n => n !== name);
-
-  guessed.push(name);
-
-  // keep only last 100
-  if(guessed.length > 100){
-    guessed = guessed.slice(-100);
+  // avoid duplicates
+  if(!mastered.includes(name)){
+    mastered.push(name);
   }
 
-  saveGuessedPeople(guessed);
+  saveMasteredPeople(mastered);
 }
 
+
+function resetMasteredPeople(){
+  localStorage.removeItem(STORAGE_KEY);
+}   
 
 let allPeople = []
 
@@ -77,7 +76,12 @@ const nextBtn = document.getElementById("nextBtn")
 const photo = document.getElementById("photo")
 
 
-
+function clearResultMarkers() {
+  if (window.resultMarkers) {
+    window.resultMarkers.forEach(m => m.remove());
+    window.resultMarkers = [];
+  }
+}
 
 
 // Load GeoJSON
@@ -125,7 +129,16 @@ fetch("https://mapsmania.github.io/inventions/notable_people.geojson")
   });
 
 function startCountryGame(countryName) {
+
+  clearResultMarkers();
+    
   document.getElementById("welcomeOverlay").style.display = "none";
+  const panel = document.getElementById("panel");
+
+panel.style.display = "flex";
+
+
+  
 
   // 1. Filter people for this country
   const countryPeople = allPeople.filter(p => p.properties["Birth Country"] === countryName);
@@ -154,19 +167,28 @@ function startCountryGame(countryName) {
 }
 
 function startGame(){
+
+  clearResultMarkers();
+    
   document.getElementById("summaryOverlay").style.display = "none";
+  const panel = document.getElementById("panel");
 
-  currentCountryCenter = null; // reset to world view
+panel.style.display = "flex";
 
-const guessed = getGuessedPeople();
 
-const availablePeople = allPeople.filter(p => 
-  !guessed.includes(p.properties.Name)
-);
+  
+  currentCountryCenter = null;
+  currentCountryBounds = null; // ✅ important fix
 
-const pool = availablePeople.length >= 10 ? availablePeople : allPeople;
+  const mastered = getMasteredPeople();
 
-gamePeople = shuffle(pool).slice(0, 10);
+  const availablePeople = allPeople.filter(p => 
+    !mastered.includes(p.properties.Name)
+  );
+
+  const pool = availablePeople.length >= 10 ? availablePeople : allPeople;
+
+  gamePeople = shuffle(pool).slice(0, 10);
   currentIndex = 0;
   guesses = [];
 
@@ -312,6 +334,17 @@ map.on("click", (e)=>{
   roundActive = false
 
   const guess = [e.lngLat.lng, e.lngLat.lat]
+
+
+if (guessMarker) {
+  guessMarker.remove();
+}
+
+guessMarker = new maplibregl.Marker({
+  color: "#007bff"
+})
+.setLngLat(guess)
+.addTo(map);
   const person = gamePeople[currentIndex]
   const actual = person.geometry.coordinates
 
@@ -330,10 +363,10 @@ map.on("click", (e)=>{
     score
   });
 
-  // Only store for world mode
-  if(!currentCountryBounds){
-    addGuessedPerson(person.properties.Name);
-  }
+  // Only store GOOD guesses (<= 200 km) and only in world mode
+if(!currentCountryBounds && distance <= 200){
+  addMasteredPerson(person.properties.Name);
+}
 
   
   showResult(distance, actual);
@@ -757,3 +790,270 @@ document.getElementById("backToChoice").onclick = () => {
   // Show the initial welcome choice panel
   document.getElementById("welcomeChoice").style.display = "flex";
 };
+
+document.getElementById("resultsBtn").onclick = () => {
+  showResultsMap();
+};
+
+function showResultsMap() {
+
+     // 🔥 CLEAN UP OLD GAME VISUALS FIRST
+
+  // Remove answer marker
+  if (answerMarker) {
+    answerMarker.remove();
+    answerMarker = null;
+  }
+
+  // Remove guess marker (if you ever use it)
+  if (guessMarker) {
+    guessMarker.remove();
+    guessMarker = null;
+  }
+
+  // Remove result line layer + source
+  if (map.getLayer("resultLine")) {
+    map.removeLayer("resultLine");
+  }
+
+  if (map.getSource("resultLine")) {
+    map.removeSource("resultLine");
+  }
+
+  resultLine = null;
+
+  // ALSO clear any previous result markers (you already do this, keep it)
+  if (window.resultMarkers) {
+    window.resultMarkers.forEach(m => m.remove());
+    window.resultMarkers = [];
+  }
+    
+// 1. Try to find the panel
+  let resultPanel = document.getElementById("resultspanel");
+
+  // 2. If it doesn't exist yet, create it and attach it to the layout
+  if (!resultPanel) {
+    resultPanel = document.createElement("div");
+    resultPanel.id = "resultspanel";
+    document.getElementById("layout").appendChild(resultPanel);
+  }
+
+  // 3. NOW that we are 100% sure it exists, we can change the styles
+  document.getElementById("panel").style.display = "none";
+  resultPanel.style.display = "flex"; 
+
+  // 4. Clear and rebuild the content
+  resultPanel.innerHTML = "";
+
+// Create Back button
+const backButton = document.createElement("button");
+backButton.textContent = "← Back";
+backButton.style.padding = "10px";
+backButton.style.marginBottom = "10px";
+backButton.style.borderRadius = "8px";
+backButton.style.border = "none";
+backButton.style.cursor = "pointer";
+
+// Back button logic
+backButton.onclick = () => {
+  // Remove results panel
+  if (resultPanel) {
+    resultPanel.style.display = "none";
+  }
+
+  // Remove result markers
+  if (window.resultMarkers) {
+    window.resultMarkers.forEach(m => m.remove());
+    window.resultMarkers = [];
+  }
+
+  // Show welcome overlay
+  const overlay = document.getElementById("welcomeOverlay");
+  overlay.style.display = "flex";
+
+  // Reset overlay panels
+  document.getElementById("welcomeChoice").style.display = "";
+  document.getElementById("countryListPanel").style.display = "none";
+
+  // 🔥 Reset map view (important!)
+  map.flyTo({
+    center: INITIAL_CENTER,
+    zoom: INITIAL_ZOOM
+  });
+
+  
+};
+// Create Reset button
+const resetButton = document.createElement("button");
+resetButton.textContent = "Reset Progress";
+resetButton.style.padding = "10px";
+resetButton.style.borderRadius = "8px";
+resetButton.style.border = "none";
+resetButton.style.cursor = "pointer";
+resetButton.style.background = "#ff4d4d";
+resetButton.style.color = "white";
+
+// Reset button logic
+resetButton.onclick = () => {
+  const confirmReset = confirm("Are you sure you want to reset all progress?");
+  if (confirmReset) {
+    localStorage.clear();
+    alert("Progress reset!");
+    location.reload(); // refresh to reset UI
+  }
+};
+
+
+// Add buttons to panel
+resultPanel.appendChild(backButton);
+
+// Add results message
+const message = document.createElement("p");
+message.textContent = "The markers on this map show the birthplaces of notable people around the world whose birthplaces you identified to within 200km.";
+message.style.marginBottom = "15px";
+message.style.fontSize = "16px";
+message.style.lineHeight = "1.4";
+
+resultPanel.appendChild(message);
+    
+resultPanel.appendChild(resetButton);
+
+  const mastered = getMasteredPeople();
+
+  // Filter GeoJSON to only mastered people
+  const masteredPeople = allPeople.filter(p =>
+    mastered.includes(p.properties.Name)
+  );
+
+  // Remove old markers if needed
+  if (window.resultMarkers) {
+    window.resultMarkers.forEach(m => m.remove());
+  }
+  window.resultMarkers = [];
+
+  // Add markers
+  masteredPeople.forEach(async (person) => {
+    const coords = person.geometry.coordinates;
+
+    const img = document.createElement("img");
+    img.style.width = "40px";
+    img.style.height = "40px";
+    img.style.borderRadius = "50%";
+    img.style.objectFit = "cover";
+    img.style.border = "2px solid white";
+
+    const name = person.properties.Name;
+
+    // If cached, use it
+    if (wikiCache[name]?.thumbnail?.source) {
+      img.src = wikiCache[name].thumbnail.source;
+    } else {
+      // Otherwise fetch it
+      try {
+        const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        wikiCache[name] = data;
+
+        if (data.thumbnail?.source) {
+          img.src = data.thumbnail.source;
+        }
+      } catch (e) {
+        console.log("Image load failed for", name);
+      }
+    }
+
+    const marker = new maplibregl.Marker({ element: img })
+  .setLngLat(coords)
+  .addTo(map);
+
+   window.resultMarkers.push(marker);   
+
+// 👉 Handle click on marker
+img.style.cursor = "pointer";
+
+img.onclick = () => {
+  // 1. Find or Create the Scroll Container (so buttons stay put)
+  let scrollBox = resultPanel.querySelector(".scroll-container");
+  if (!scrollBox) {
+    // If it doesn't exist, we create it once
+    scrollBox = document.createElement("div");
+    scrollBox.className = "scroll-container";
+    scrollBox.style.flex = "1";
+    scrollBox.style.overflowY = "auto";
+    scrollBox.style.minHeight = "0";
+    scrollBox.style.marginTop = "10px";
+    
+    // Clear only the middle area, keep buttons
+    resultPanel.innerHTML = ""; 
+    resultPanel.appendChild(backButton);
+    resultPanel.appendChild(scrollBox);
+    resultPanel.appendChild(resetButton);
+  }
+
+  // 2. Clear ONLY the scrollBox content
+  scrollBox.innerHTML = "";
+
+  // 3. Get wiki data
+  const data = wikiCache[name];
+
+  // 4. Build the Bio HTML
+  const info = document.createElement("div");
+  let html = `
+    <h2 style="margin-top:0;">${name}</h2>
+    <p><strong>Birthplace:</strong> ${person.properties["Birth City"]}, ${person.properties["Birth Country"]}</p>
+  `;
+
+  if (data) {
+    let shortBio = data.extract ? data.extract.split('. ').slice(0, 3).join('. ') + '.' : "";
+    html += `
+      <div style="margin-top:6px;font-size:14px;line-height:1.5;">
+        ${shortBio}<br><br>
+        <a href="${data.content_urls?.desktop?.page}" target="_blank" style="color:#007bff;text-decoration:none;font-weight:bold;">
+          Read more on Wikipedia →
+        </a>
+      </div>
+    `;
+  }
+
+  info.innerHTML = html;
+
+  // 5. Add Image
+  const largeImg = document.createElement("img");
+  largeImg.src = img.src;
+  largeImg.style.width = "100%";
+  largeImg.style.maxHeight = "200px";
+  largeImg.style.objectFit = "cover";
+  largeImg.style.borderRadius = "10px";
+  largeImg.style.marginTop = "15px";
+
+  // 6. Append to the SCROLL BOX
+  scrollBox.appendChild(largeImg);
+  scrollBox.appendChild(info);
+  
+  // Auto-scroll to top of the new bio
+  scrollBox.scrollTop = 0;
+};
+    
+  });
+
+  // Fit map to markers
+  if (masteredPeople.length > 0) {
+    const bounds = new maplibregl.LngLatBounds();
+
+    masteredPeople.forEach(p => {
+      bounds.extend(p.geometry.coordinates);
+    });
+
+    map.fitBounds(bounds, {
+      padding: 100,
+      duration: 1500
+    });
+  } else {
+    
+  }
+
+  // Hide overlays if needed
+  document.getElementById("welcomeOverlay").style.display = "none";
+}
