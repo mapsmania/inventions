@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Birthplace Guess Game</title>
+<title>Pin the Past</title>
 
 <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
@@ -17,10 +17,13 @@
 <div id="welcomeOverlay">
   <!-- First choice panel -->
   <div id="welcomeChoice" class="welcomePanel">
-    <h1>Famous Birthplace Game</h1>
-    <p>Test your geography skills!</p>
+    <img src="https://mapsmania.github.io/inventions/logo.png" 
+     alt="Pin the Past logo"
+     style="width: 220px;">
+    <p>Where were these people born?</p>
     <button id="worldGameBtn">🌍 World Game</button>
     <button id="countryGameBtn">🇺🇸 Country Game</button>
+    <button id="resultsBtn">🏆 Results</button>  
   </div>
 
   <!-- Second panel: country list, hidden initially -->
